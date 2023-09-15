@@ -1,6 +1,8 @@
 const { BadRequestError } = require("../expressError");
 
-// THIS NEEDS SOME GREAT DOCUMENTATION.
+/** This functionality is designed to help us in the updating of a user object.
+* Instead of parsing and writing SQL in our code this takes a JSON response and converts
+* it to SQL for us. **/  
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   const keys = Object.keys(dataToUpdate);
