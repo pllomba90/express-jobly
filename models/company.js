@@ -145,29 +145,29 @@ class Company {
       query += ` AND LOWER(name) LIKE $${valuesCounter}`;
       values.push(`%${name.toLowerCase()}%`);
       console.log(values);
-     }
+     };
 
      if (minEmployees){
       valuesCounter++;
       query += ` AND num_employees >= $${valuesCounter}`;
       values.push(parseInt(minEmployees));
       console.log(values);
-     }
+     };
 
      if (maxEmployees){
       valuesCounter++;
       query +=` AND num_employees <= $${valuesCounter}`;
       values.push(parseInt(maxEmployees));
       console.log(values);
-     }
+     };
 
      if (minEmployees && maxEmployees && parseInt(minEmployees) > parseInt(maxEmployees)) {
       res.status(400).json({ error: 'minEmployees should be less than or equal to maxEmployees' });
       return;
-    }
+    };
     
     try {
-      const result = await db.query(query,[...values]);
+      const result = await db.query(query, values);
       console.log(query, values);
       return result.rows;
     } catch (error) {

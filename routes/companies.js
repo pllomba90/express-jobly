@@ -59,7 +59,7 @@ router.get("/", async function (req, res, next) {
      companies = await Company.findAll();
     }else {
       
-      companies = await Company.filterCompanies(name, minEmployees, maxEmployees);
+      companies = await Company.filterCompanies(res, name, minEmployees, maxEmployees);
     }
 
     if (companies.error) {
