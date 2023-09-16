@@ -123,6 +123,59 @@ class Company {
 
     return company;
   }
+/** This functionality adds in the ability to filter your get request to make it 
+ * more of a search. This works by creating a basic sql query and then adding to it 
+ * if search parameters are entered. 
+ */
+  static async filterCompanies(res, name, minEmployees, maxEmployees){
+    let query = `SELECT handle,
+     name, 
+     description, 
+     num_employees, 
+     logo_url
+     FROM companies
+     WHERE 1=1`
+
+     let values = [];
+     let valuesCounter = 0;
+
+     
+     if (name){
+      valuesCounter++;
+      query += ` AND LOWER(name) LIKE $${valuesCounter}`;
+      values.push(`%${name.toLowerCase()}%`);
+      console.log(values);
+     }
+
+     if (minEmployees){
+      valuesCounter++;
+      query += ` AND num_employees >= $${valuesCounter}`;
+      values.push(parseInt(minEmployees));
+      console.log(values);
+     }
+
+     if (maxEmployees){
+      valuesCounter++;
+      query +=` AND num_employees <= $${valuesCounter}`;
+      values.push(parseInt(maxEmployees));
+      console.log(values);
+     }
+
+     if (minEmployees && maxEmployees && parseInt(minEmployees) > parseInt(maxEmployees)) {
+      res.status(400).json({ error: 'minEmployees should be less than or equal to maxEmployees' });
+      return;
+    }
+    
+    try {
+      const result = await db.query(query,[...values]);
+      console.log(query, values);
+      return result.rows;
+    } catch (error) {
+      console.error('Error executing SQL query:', error);
+      throw error;
+    }
+    
+  }
 
   /** Delete given company from database; returns undefined.
    *
