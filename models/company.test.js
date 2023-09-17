@@ -86,6 +86,24 @@ describe("findAll", function () {
     ]);
   });
 });
+/************************************** filterCompanies */
+
+describe("filterCompanies", function (){
+  test("works", async function(){
+    let company = await Company.filterCompanies(res, C1, 0, 2);
+    expect(company).toEqual({
+      handle: "c1",
+      name: "C1",
+      description: "Desc1",
+      numEmployees: 1,
+      logoUrl: "http://c1.img",
+    });
+  });
+  test("no results", async function(){
+    let company = await Company.filterCompanies(res, C6, 0, 2);
+    expext(company).toEqual([]);
+  })
+})
 
 /************************************** get */
 
