@@ -3,6 +3,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const { authenticateJWT } = require("../middleware/auth")
 
 /** Related functions for companies. */
 
@@ -17,6 +18,7 @@ class Company {
    * */
 
   static async create({ handle, name, description, numEmployees, logoUrl }) {
+    
     const duplicateCheck = await db.query(
           `SELECT handle
            FROM companies
@@ -144,21 +146,18 @@ class Company {
       valuesCounter++;
       query += ` AND LOWER(name) LIKE $${valuesCounter}`;
       values.push(`%${name.toLowerCase()}%`);
-      console.log(values);
      };
 
      if (minEmployees){
       valuesCounter++;
       query += ` AND num_employees >= $${valuesCounter}`;
       values.push(parseInt(minEmployees));
-      console.log(values);
      };
 
      if (maxEmployees){
       valuesCounter++;
       query +=` AND num_employees <= $${valuesCounter}`;
       values.push(parseInt(maxEmployees));
-      console.log(values);
      };
 
      if (minEmployees && maxEmployees && parseInt(minEmployees) > parseInt(maxEmployees)) {
@@ -168,8 +167,13 @@ class Company {
     
     try {
       const result = await db.query(query, values);
-      console.log(query, values);
+      console.log(query, values)
+      if (result.rows.length === 0){
+        return ({ "message":"No matching companies. Please adjust your search parameters."});
+      }
+
       return result.rows;
+
     } catch (error) {
       console.error('Error executing SQL query:', error);
       throw error;

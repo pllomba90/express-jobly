@@ -90,7 +90,7 @@ describe("findAll", function () {
 
 describe("filterCompanies", function (){
   test("works", async function(){
-    let company = await Company.filterCompanies(res, C1, 0, 2);
+    let company = await Company.filterCompanies( "C1");
     expect(company).toEqual({
       handle: "c1",
       name: "C1",
@@ -100,8 +100,8 @@ describe("filterCompanies", function (){
     });
   });
   test("no results", async function(){
-    let company = await Company.filterCompanies(res, C6, 0, 2);
-    expext(company).toEqual([]);
+    let company = await Company.filterCompanies( "G6");
+    expect(company).toEqual({ "message":"No matching companies. Please adjust your search parameters."});
   })
 })
 
