@@ -10,6 +10,7 @@ const {
 } = require("../expressError");
 
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
+const app = require("../app");
 
 /** Related functions for users. */
 
@@ -103,12 +104,14 @@ class User {
 
   static async findAll() {
     const result = await db.query(
-          `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
-           FROM users
+          `SELECT u.username,
+                  u.first_name AS "firstName",
+                  u.last_name AS "lastName",
+                  u.email,
+                  u.is_admin AS "isAdmin",
+                  a.job_id
+           FROM users AS u
+           LEFT JOIN applications AS a ON u.username = a.username
            ORDER BY username`,
     );
 
@@ -125,21 +128,32 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-          `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE username = $1`,
-        [username],
-    );
+      `SELECT u.username,
+      u.first_name AS "firstName",
+      u.last_name AS "lastName",
+      u.email,
+      u.is_admin AS "isAdmin",
+      a.job_id
+      FROM users AS u
+      LEFT JOIN applications AS a ON u.username = a.username
+      WHERE u.username = $1`, 
+      [username]);
 
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
     return user;
+  }
+
+  static async apply(username, job_id){
+    const application = await db.query(
+      `INSERT INTO applications (username, job_id)
+      VALUES ($1, $2)
+      RETURNING username, job_id`,
+      [username, job_id]);
+
+      return application;
   }
 
   /** Update user data with `data`.

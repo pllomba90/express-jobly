@@ -78,6 +78,16 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 
+/** This is the application route. It allows a logged in user to apply to a specific job. It returns both the username and job id. */
+router.post("/:username/jobs/:id", ensureLoggedIn, async function (req, res, next){
+  try {
+    const application = await User.apply(req.params.username, req.params.id);
+    return res.json({ application });
+  }catch(err){
+    return next(err);
+  }
+});
+
 /** PATCH /[username] { user } => { user }
  *
  * Data can include:
