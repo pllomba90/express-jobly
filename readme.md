@@ -1,6 +1,6 @@
 # Jobly Backend
 
-This is the Express backend for Jobly, version 2.
+This is the Express backend for Jobly, version 2; a LinkedIn clone.
 
 To run this:
 
